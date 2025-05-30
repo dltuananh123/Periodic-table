@@ -5,6 +5,7 @@ import { Header } from "@/components/header";
 import { LanguageProvider } from "@/lib/language-context";
 import { SearchProvider } from "@/lib/search-context";
 import { getTranslation } from "@/lib/translations";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,6 +43,7 @@ export default function RootLayout({
           <SearchProvider>
             <Header />
             {children}
+            <Analytics />
           </SearchProvider>
         </LanguageProvider>
       </body>

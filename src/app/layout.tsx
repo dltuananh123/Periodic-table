@@ -6,6 +6,7 @@ import { LanguageProvider } from "@/lib/language-context";
 import { SearchProvider } from "@/lib/search-context";
 import { getTranslation } from "@/lib/translations";
 import { Analytics } from "@vercel/analytics/next";
+import { ThemeProvider } from "next-themes";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,18 +35,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        suppressHydrationWarning={true}
+        suppressHydrationWarning
       >
-        <LanguageProvider>
-          <SearchProvider>
-            <Header />
-            {children}
-            <Analytics />
-          </SearchProvider>
-        </LanguageProvider>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+          <LanguageProvider>
+            <SearchProvider>
+              <Header />
+              {children}
+              <Analytics />
+            </SearchProvider>
+          </LanguageProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

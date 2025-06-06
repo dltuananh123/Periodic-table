@@ -58,7 +58,7 @@ const BalanceEquationOutputSchema = z.object({
     .string()
     .optional()
     .describe(
-      "If reactionOccurs is true, describe typical conditions for the reaction considering Temperature, Pressure, Catalyst, and Other specific conditions. Format as a multi-line string or clearly delineated. E.g., 'Nhiệt độ: 25°C (thường)\\nÁp suất: 1 atm (thường)\\nChất xúc tác: không cần\\nĐiều kiện khác: Cần tia lửa'. Use 'thường' for standard/room conditions if no specific value is critical. Use 'không cần' for catalysts if none are specifically required. Use 'không' for 'Điều kiện khác' if none. Only if reactionOccurs is true and conditions are known/relevant."
+      "If reactionOccurs is true, describe typical conditions for the reaction. Format as a multi-line string with clear sections. Each section should be on a new line with no extra blank lines between sections. Trim any trailing whitespace. Example format:\nNhiệt độ: 25°C\nÁp suất: 1 atm\nChất xúc tác: không cần\nĐiều kiện khác: Cần tia lửa"
     ),
   noReactionDisplay: z
     .string()
@@ -129,12 +129,20 @@ Follow these instructions precisely:
         *   Set 'reactionOccurs' to true.
         *   Balance the equation. Provide the balanced equation in the 'balancedEquation' field. Use integer coefficients; omit if 1.
         *   In the 'explanation' field, provide a very brief, one-sentence high-level summary of the reaction in the specified language.
-        *   For 'reactionConditions', always consider and report on the following four aspects in the specified language:
-            *   **Temperature:** (e.g., "Temperature: 25°C", "Temperature: 1000 K", "Temperature: standard" if it occurs at room temperature)
-            *   **Pressure:** (e.g., "Pressure: 1 atm", "Pressure: 200 bar", "Pressure: standard" if it occurs at standard atmospheric pressure)
-            *   **Catalyst:** (e.g., "Catalyst: Pt", "Catalyst: concentrated H_2SO_4", "Catalyst: not required" if no specific catalyst is needed)
-            *   **Other conditions:** (e.g., "Other conditions: UV light required", "Other conditions: stirring needed", "Other conditions: none" if no other specific conditions are needed)
-            *   Format these conditions clearly, possibly as a multi-line string or a well-delineated single string. Only provide this field if conditions are known or generally applicable.
+        *   For 'reactionConditions', format as follows (in the specified language):
+            *   Each condition on a new line
+            *   No blank lines between conditions
+            *   No trailing whitespace
+            *   Format:
+                Nhiệt độ: [value]
+                Áp suất: [value]
+                Chất xúc tác: [value]
+                Điều kiện khác: [simple one-sentence explanation]
+            *   Example:
+                Nhiệt độ: thường
+                Áp suất: thường
+                Chất xúc tác: không cần
+                Điều kiện khác: Cần tia lửa để bắt đầu phản ứng
         *   List the individual reactant formulas in the 'reactants' array and product formulas in the 'products' array.
         *   Do NOT populate the 'noReactionDisplay' field.
     *   If the input string does NOT describe a chemical reaction that can reasonably occur:
@@ -153,7 +161,7 @@ Expected Output 1 (JSON object for a successful reaction):
   "explanation": "This reaction forms water from hydrogen and oxygen gases.",
   "reactants": ["H_2", "O_2"],
   "products": ["H_2O"],
-  "reactionConditions": "Temperature: standard\nPressure: standard\nCatalyst: not required\nOther conditions: Requires spark or heat to initiate."
+  "reactionConditions": "Temperature: standard\nPressure: standard\nCatalyst: not required\nOther conditions: Needs a spark to start the reaction"
 }
 
 Example Input 2 (Vietnamese): 'Fe + O_2 -> Fe_2O_3', language: 'vi'
@@ -164,7 +172,7 @@ Expected Output 2 (JSON object for a successful reaction):
   "explanation": "Đây là phản ứng hình thành rỉ sét (sắt(III) oxit).",
   "reactants": ["Fe", "O_2"],
   "products": ["Fe_2O_3"],
-  "reactionConditions": "Nhiệt độ: thường\nÁp suất: thường\nChất xúc tác: không cần\nĐiều kiện khác: Xảy ra khi có sự hiện diện của không khí ẩm (oxy và hơi nước)."
+  "reactionConditions": "Nhiệt độ: thường\nÁp suất: thường\nChất xúc tác: không cần\nĐiều kiện khác: Cần không khí ẩm để phản ứng xảy ra"
 }
 
 Example Input 3 (English): 'Gold + Water -> Hydrogen', language: 'en'
